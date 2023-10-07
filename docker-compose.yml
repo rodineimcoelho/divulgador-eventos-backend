@@ -1,0 +1,29 @@
+version: '3.1'
+
+services:
+  app:
+    build: .
+    container_name: divulgador_eventos_backend
+    ports:
+      - ${PORT}:${PORT}
+    command: npm run start:prod
+    environment:
+      DATABASE_HOST: db
+    depends_on:
+      - db
+
+  db:
+    image: postgres
+    restart: always
+    container_name: divulgador_eventos_db
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - ${DATABASE_PORT}:${DATABASE_PORT}
+    volumes:
+      - divulgador_eventos_data:/var/lib/postgresql/data
+
+volumes:
+  divulgador_eventos_data:
