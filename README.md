@@ -30,6 +30,12 @@ DATABASE_PASSWORD=postgres
 DATABASE_NAME=divulgador_eventos
 ```
 
+## Executando as migrações
+
+```bash
+$ npm run migration:run
+```
+
 ## Executando a aplicação
 
 ```bash
