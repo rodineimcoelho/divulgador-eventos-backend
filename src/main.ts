@@ -13,12 +13,14 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       transformOptions: { enableImplicitConversion: true },
-      forbidNonWhitelisted: true
+      forbidNonWhitelisted: true,
+      stopAtFirstError: true
     })
   );
 
   const config = new DocumentBuilder()
     .setTitle('Divulgador de Eventos')
+    .addBearerAuth()
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);

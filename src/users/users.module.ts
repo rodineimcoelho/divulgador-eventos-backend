@@ -3,12 +3,12 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { ValidationModule } from 'src/validation/validation.module';
 import { IsUniqueEmailConstraint } from './validation/is-unique-email.validation';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './entities/user.entity';
+import { PrismaModule } from 'src/prisma/prisma.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), ValidationModule],
+  imports: [PrismaModule, ValidationModule],
   controllers: [UsersController],
-  providers: [UsersService, IsUniqueEmailConstraint]
+  providers: [UsersService, IsUniqueEmailConstraint],
+  exports: [UsersService]
 })
 export class UsersModule {}

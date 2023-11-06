@@ -5,7 +5,7 @@ API de um divulgador de eventos.
 ## Principais Tecnologias
 
 - [Nest](https://nestjs.com/)
-- [TypeORM](https://typeorm.io/)
+- [Prisma](https://www.prisma.io/)
 - [Docker](https://www.docker.com/)
 
 ## Instalação
@@ -28,6 +28,15 @@ DATABASE_PORT=5432
 DATABASE_USER=postgres
 DATABASE_PASSWORD=postgres
 DATABASE_NAME=divulgador_eventos
+DATABASE_URL="postgresql://${DATABASE_USER}:${DATABASE_PASSWORD}@${DATABASE_HOST}:${DATABASE_PORT}/${DATABASE_NAME}?schema=public"
+
+# JWT
+JWT_SECRET=my-secret
+
+# REDIS
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=redis
 ```
 
 ## Executando as migrações

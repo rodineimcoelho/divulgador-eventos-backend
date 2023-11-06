@@ -9,8 +9,10 @@ services:
     command: npm run start:prod
     environment:
       DATABASE_HOST: db
+      REDIS_HOST: redis
     depends_on:
       - db
+      - redis
 
   db:
     image: postgres
@@ -25,5 +27,16 @@ services:
     volumes:
       - divulgador_eventos_data:/var/lib/postgresql/data
 
+  redis:
+    image: redis
+    restart: always
+    container_name: divulgador_eventos_redis
+    command: redis-server --save 1 1 --appendonly yes --appendfsync always --port ${REDIS_PORT} --requirepass ${REDIS_PASSWORD}
+    ports:
+      - ${REDIS_PORT}:${REDIS_PORT}
+    volumes:
+      - divulgador_eventos_redis_data:/data
+
 volumes:
   divulgador_eventos_data:
+  divulgador_eventos_redis_data:

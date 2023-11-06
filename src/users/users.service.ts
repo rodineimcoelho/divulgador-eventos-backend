@@ -5,44 +5,56 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Repository } from 'typeorm';
-import { User } from './entities/user.entity';
-import { InjectRepository } from '@nestjs/typeorm';
+import { PrismaService } from 'src/prisma/prisma.service';
+import * as bcrypt from 'bcrypt';
+import { User } from '@prisma/client';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User) private usersRepository: Repository<User>
-  ) {}
+  constructor(private prismaService: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const user = this.usersRepository.create(createUserDto);
-    await user.hashPassword();
-    await this.usersRepository.save(user);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordConfirmation, ...data } = createUserDto;
+    data.password = await bcrypt.hash(data.password, 10);
+    await this.prismaService.user.create({
+      data
+    });
   }
 
   findByEmail(email: string) {
-    return this.usersRepository.findOneBy({ email });
+    return this.prismaService.user.findUnique({ where: { email } });
   }
 
   findById(id: string) {
-    return this.usersRepository.findOneBy({ id });
+    return this.prismaService.user.findUnique({ where: { id } });
+  }
+
+  excludePasswordFields(user: User) {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, passwordUpdateDate, ...userWithoutPassword } = user;
+    return userWithoutPassword;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
-    const user = await this.findById(id);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { passwordConfirmation, currentPassword, ...data } = updateUserDto;
 
+    const user = await this.findById(id);
     if (!user) throw new NotFoundException();
 
-    if (!(await user.comparePassword(updateUserDto.currentPassword)))
+    if (!(await bcrypt.compare(currentPassword, user.password)))
       throw new ForbiddenException(['wrong password']);
 
-    const updatedUser = this.usersRepository.create({
-      ...user,
-      ...updateUserDto
+    await this.prismaService.user.update({
+      where: { id },
+      data: {
+        ...data,
+        password: data.password
+          ? await bcrypt.hash(data.password, 10)
+          : undefined,
+        passwordUpdateDate: data.password ? new Date() : undefined
+      }
     });
-
-    if (updateUserDto.password) await updatedUser.hashPassword();
-    await this.usersRepository.save(updatedUser);
   }
 }
