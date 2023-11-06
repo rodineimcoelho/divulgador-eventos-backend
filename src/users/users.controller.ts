@@ -7,7 +7,9 @@ import {
   ParseUUIDPipe,
   Req,
   ForbiddenException,
-  UseGuards
+  UseGuards,
+  Get,
+  NotFoundException
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -37,5 +39,18 @@ export class UsersController {
     const user = request.user as User;
     if (user.id !== id) throw new ForbiddenException();
     return this.usersService.update(id, updateUserDto);
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Get(':id')
+  async findById(@Param('id', ParseUUIDPipe) id: string, @Req() request: any) {
+    const user = request.user as User;
+    if (user.id !== id) throw new ForbiddenException();
+
+    const foundUser = await this.usersService.findById(id);
+    if (!foundUser) throw new NotFoundException(['user not found']);
+
+    return this.usersService.excludePasswordFields(foundUser);
   }
 }
