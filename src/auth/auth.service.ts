@@ -6,6 +6,7 @@ import { randomUUID } from 'crypto';
 import { RedisService } from 'src/redis/redis.service';
 import * as bcrypt from 'bcrypt';
 import { User } from '@prisma/client';
+import { ErrorMessages } from './enum/error-messages.enum';
 
 @Injectable()
 export class AuthService {
@@ -41,7 +42,7 @@ export class AuthService {
     const refreshTokenPayload = this.jwtService.verify(refreshToken);
 
     if (await this.redisService.get(refreshTokenPayload.jti))
-      throw new UnauthorizedException();
+      throw new UnauthorizedException([ErrorMessages.TOKEN_ERROR]);
 
     const user = await this.usersService.findById(refreshTokenPayload.sub);
 
@@ -50,7 +51,7 @@ export class AuthService {
         user.passwordUpdateDate &&
         user?.passwordUpdateDate.getTime() / 1000 >= refreshTokenPayload.iat
       )
-        throw new UnauthorizedException();
+        throw new UnauthorizedException([ErrorMessages.TOKEN_ERROR]);
 
       this.redisService.set(
         refreshTokenPayload.jti,
@@ -62,6 +63,6 @@ export class AuthService {
       return this.login(user);
     }
 
-    throw new UnauthorizedException();
+    throw new UnauthorizedException([ErrorMessages.TOKEN_ERROR]);
   }
 }
