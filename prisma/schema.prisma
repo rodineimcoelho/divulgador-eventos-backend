@@ -13,4 +13,5 @@ model User {
   email String @unique
   password String
   passwordUpdateDate DateTime?
+  isAdmin Boolean @default(false)
 }
