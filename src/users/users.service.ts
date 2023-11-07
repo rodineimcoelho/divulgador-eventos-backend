@@ -1,7 +1,7 @@
 import {
-  ForbiddenException,
   Injectable,
-  NotFoundException
+  NotFoundException,
+  UnauthorizedException
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -44,7 +44,7 @@ export class UsersService {
     if (!user) throw new NotFoundException();
 
     if (!(await bcrypt.compare(currentPassword, user.password)))
-      throw new ForbiddenException(['wrong password']);
+      throw new UnauthorizedException(['wrong password']);
 
     await this.prismaService.user.update({
       where: { id },
