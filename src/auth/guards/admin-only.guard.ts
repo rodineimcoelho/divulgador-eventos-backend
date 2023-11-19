@@ -8,7 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { User } from '@prisma/client';
 
 @Injectable()
-export class LibrarianOnlyGuard implements CanActivate {
+export class AdminOnly implements CanActivate {
   constructor(private reflector: Reflector) {}
 
   canActivate(context: ExecutionContext): boolean {

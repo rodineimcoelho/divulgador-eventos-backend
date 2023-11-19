@@ -6,6 +6,9 @@ import { ValidationModule } from './validation/validation.module';
 import { AuthModule } from './auth/auth.module';
 import { RedisModule } from './redis/redis.module';
 import { PrismaModule } from './prisma/prisma.module';
+import { EventsModule } from './events/events.module';
+import { LecturersModule } from './lecturers/lecturers.module';
+import { ImagesModule } from './images/images.module';
 
 @Module({
   imports: [
@@ -14,7 +17,10 @@ import { PrismaModule } from './prisma/prisma.module';
     ValidationModule,
     AuthModule,
     RedisModule,
-    PrismaModule
+    PrismaModule,
+    EventsModule,
+    LecturersModule,
+    ImagesModule
   ]
 })
 export class AppModule {}

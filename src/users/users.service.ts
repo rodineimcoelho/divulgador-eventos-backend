@@ -26,8 +26,10 @@ export class UsersService {
     return this.prismaService.user.findUnique({ where: { email } });
   }
 
-  findById(id: string) {
-    return this.prismaService.user.findUnique({ where: { id } });
+  async findById(id: string) {
+    const user = await this.prismaService.user.findUnique({ where: { id } });
+    if (!user) throw new NotFoundException(['user not found']);
+    return user;
   }
 
   excludePasswordFields(user: User) {
@@ -41,7 +43,6 @@ export class UsersService {
     const { passwordConfirmation, currentPassword, ...data } = updateUserDto;
 
     const user = await this.findById(id);
-    if (!user) throw new NotFoundException();
 
     if (!(await bcrypt.compare(currentPassword, user.password)))
       throw new UnauthorizedException(['wrong password']);

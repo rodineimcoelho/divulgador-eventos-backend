@@ -8,10 +8,46 @@ datasource db {
 }
 
 model User {
-  id String @default(uuid()) @id
-  fullName String
-  email String @unique
-  password String
+  id                 String    @id @default(uuid())
+  fullName           String
+  email              String    @unique
+  password           String
   passwordUpdateDate DateTime?
-  isAdmin Boolean @default(false)
+  isAdmin            Boolean   @default(false)
+}
+
+model Lecturer {
+  id           String  @id @default(uuid())
+  presentation String
+  about        String
+  imageName    String
+  events       Event[]
+}
+
+model Event {
+  id         String        @id @default(uuid())
+  title      String
+  type       EventType
+  lecturer   Lecturer      @relation(fields: [lecturerId], references: [id])
+  lecturerId String
+  modality   EventModality
+  abstract   String
+  startDate  DateTime
+  endDate    DateTime
+  location   String?
+  link       String?
+  isVisible  Boolean       @default(false)
+}
+
+enum EventType {
+  COURSE
+  LECTURE
+  ROUND_TABLE
+  SHORT_COURSE
+  WORKSHOP
+}
+
+enum EventModality {
+  IN_PERSON
+  ONLINE
 }
