@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   NotFoundException
@@ -45,9 +46,10 @@ export class LecturersService {
     return this.prismaService.lecturer.findMany();
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, includeEvents: boolean = false) {
     const lecturer = await this.prismaService.lecturer.findUnique({
-      where: { id }
+      where: { id },
+      include: { events: includeEvents }
     });
     if (!lecturer) throw new NotFoundException(['lecturer not found']);
     return lecturer;
@@ -58,7 +60,8 @@ export class LecturersService {
     updateLecturerDto?: UpdateLecturerDto,
     image?: Express.Multer.File
   ) {
-    const lecturer = await this.findOne(id);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { events, ...lecturer } = await this.findOne(id);
     const imageName = image
       ? `${randomUUID()}${path.extname(image.originalname)}`
       : undefined;
@@ -84,7 +87,12 @@ export class LecturersService {
   }
 
   async remove(id: string) {
-    const lecturer = await this.findOne(id);
+    const lecturer = await this.findOne(id, true);
+
+    if (lecturer.events.length) {
+      throw new BadRequestException(['lecturer have events']);
+    }
+
     await this.prismaService.lecturer.delete({ where: { id } });
     await this.imagesService.remove(lecturer.imageName);
   }
