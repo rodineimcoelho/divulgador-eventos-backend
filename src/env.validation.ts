@@ -19,6 +19,18 @@ class EnviromentVariables {
 
   @IsNotEmpty()
   DATABASE_NAME: string;
+
+  @IsNotEmpty()
+  JWT_SECRET: string;
+
+  @IsNotEmpty()
+  REDIS_HOST: string;
+
+  @IsNumber()
+  REDIS_PORT: number;
+
+  @IsNotEmpty()
+  REDIS_PASSWORD: string;
 }
 
 export function validate(config: Record<string, unknown>) {
