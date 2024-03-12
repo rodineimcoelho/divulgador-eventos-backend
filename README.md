@@ -83,3 +83,8 @@ $ npm run test:e2e
 # testes com cobertura
 $ npm run test:cov
 ```
+
+## Próximos Passos
+
+- Adicionar um cadastro mais completo
+- Adicionar testes
